@@ -1,4 +1,4 @@
-"""Receive GPS and arming state from PX4; never publish vehicle commands."""
+"""Shared PX4 position monitor and the Here4 GPS logger entry point."""
 
 import math
 import time
@@ -11,7 +11,7 @@ from rclpy.qos import (
     DurabilityPolicy, HistoryPolicy, QoSProfile, ReliabilityPolicy,
 )
 
-from here4_logger.recorder import gps_values, PositionRecorder
+from here4_logger.recorder import CSV_FIELDS, gps_values, PositionRecorder
 
 
 def px4_topic(name, message_type, namespace=''):
@@ -21,12 +21,14 @@ def px4_topic(name, message_type, namespace=''):
     return f'/{prefix + "/" if prefix else ""}fmu/out/{name}{suffix}'
 
 
-class GpsLogger(Node):
+class PositionLogger(Node):
+    """Receive one position source and save it using confirmed PX4 arming state."""
+
     def __init__(self):
-        super().__init__('here4_logger')
-        self.declare_parameter('output_directory', '~/gps_logs')
+        super().__init__(self.NODE_NAME)
+        self.declare_parameter('output_directory', self.DEFAULT_OUTPUT_DIRECTORY)
         self.declare_parameter('px4_namespace', '')
-        self.declare_parameter('gps_topic', 'auto')
+        self.declare_parameter(self.TOPIC_PARAMETER, 'auto')
         self.declare_parameter('status_topic', 'auto')
         self.declare_parameter('print_rate_hz', 1.0)
         self.declare_parameter('stale_timeout_s', 3.0)
@@ -34,10 +36,10 @@ class GpsLogger(Node):
         # Keep accidental runtime parameter edits from appearing to take effect.
         self.add_on_set_parameters_callback(self._reject_parameter_changes)
         namespace = self.get_parameter('px4_namespace').value
-        self.gps_topic = self.get_parameter('gps_topic').value
+        self.position_topic = self.get_parameter(self.TOPIC_PARAMETER).value
         self.status_topic = self.get_parameter('status_topic').value
-        if self.gps_topic == 'auto':
-            self.gps_topic = px4_topic('vehicle_gps_position', SensorGps, namespace)
+        if self.position_topic == 'auto':
+            self.position_topic = px4_topic(self.BASE_TOPIC, self.MESSAGE_TYPE, namespace)
         if self.status_topic == 'auto':
             self.status_topic = px4_topic('vehicle_status', VehicleStatus, namespace)
 
@@ -53,9 +55,11 @@ class GpsLogger(Node):
         output_directory = self.get_parameter('output_directory').value
         if not output_directory.strip():
             raise ValueError('output_directory must not be empty')
-        self.recorder = PositionRecorder(output_directory, self.stale_timeout)
-        self.latest_gps = None
-        self.gps_received_at = None
+        self.recorder = PositionRecorder(
+            output_directory, self.stale_timeout,
+            fieldnames=self.CSV_FIELDS, filename_prefix=self.FILENAME_PREFIX)
+        self.latest_position = None
+        self.position_received_at = None
         self.received_samples = 0
 
         # BEST_EFFORT + VOLATILE accepts PX4 best-effort or reliable writers
@@ -65,14 +69,14 @@ class GpsLogger(Node):
             reliability=ReliabilityPolicy.BEST_EFFORT,
             durability=DurabilityPolicy.VOLATILE,
         )
-        self.gps_subscription = self.create_subscription(
-            SensorGps, self.gps_topic, self._on_gps, qos)
+        self.position_subscription = self.create_subscription(
+            self.MESSAGE_TYPE, self.position_topic, self._on_position, qos)
         self.status_subscription = self.create_subscription(
             VehicleStatus, self.status_topic, self._on_status, qos)
         self.print_timer = self.create_timer(1.0 / print_rate, self._print_status)
         self.flush_timer = self.create_timer(flush_interval, self.recorder.flush)
         self.get_logger().info(
-            f'GPS: {self.gps_topic} | status: {self.status_topic}')
+            f'{self.SOURCE_LABEL}: {self.position_topic} | status: {self.status_topic}')
         self.get_logger().info(
             f'CSV directory: {self.recorder.output_directory} | '
             'waiting for PX4 data; a new file starts on each confirmed arm.')
@@ -88,11 +92,11 @@ class GpsLogger(Node):
         for event in events:
             self._report_event(event)
 
-    def _on_gps(self, message):
-        self.latest_gps = gps_values(message)
-        self.gps_received_at = time.monotonic()
+    def _on_position(self, message):
+        self.latest_position = self.sample_values(message)
+        self.position_received_at = time.monotonic()
         self.received_samples += 1
-        self.recorder.write_gps(self.latest_gps)
+        self.recorder.write_position(self.latest_position)
 
     def _report_event(self, event):
         if event is not None:
@@ -112,25 +116,24 @@ class GpsLogger(Node):
             state = 'ARMED' if self.recorder.armed else 'DISARMED'
         if status_age > self.stale_timeout:
             state += ' [STATUS MISSING/STALE]'
-        if self.latest_gps is None:
-            text = f'{state} | waiting for GPS on {self.gps_topic}'
+        if self.latest_position is None:
+            text = f'{state} | waiting for {self.SOURCE_LABEL} on {self.position_topic}'
             if self.recorder.status is None:
                 text += f' | waiting for status on {self.status_topic}'
             self.get_logger().info(text)
             return
 
-        gps = self.latest_gps
-        age = max(0.0, time.monotonic() - self.gps_received_at)
-        stale = ' [GPS STALE]' if age > self.stale_timeout else ''
-        validity = 'valid 3D' if gps['position_3d_valid'] else 'INVALID 3D POSITION'
+        position = self.latest_position
+        age = max(0.0, time.monotonic() - self.position_received_at)
+        stale = f' [{self.SOURCE_LABEL} STALE]' if age > self.stale_timeout else ''
+        validity = 'valid 3D' if position['position_3d_valid'] else 'INVALID 3D POSITION'
         self.get_logger().info(
-            f'{state} | lat={gps["latitude_deg"]:.9f} '
-            f'lon={gps["longitude_deg"]:.9f} '
-            f'alt_MSL={gps["altitude_msl_m"]:.3f} m | '
-            f'fix={gps["fix_name"]} ({gps["fix_type"]}) '
-            f'sats={gps["satellites_used"]} {validity} | '
-            f'hAcc={gps["eph"]:.3f} m vAcc={gps["epv"]:.3f} m '
-            f'speed={gps["vel_m_s"]:.3f} m/s | GPS age={age:.1f}s{stale} '
+            f'{state} | lat={position["latitude_deg"]:.9f} '
+            f'lon={position["longitude_deg"]:.9f} '
+            f'alt_MSL={position["altitude_msl_m"]:.3f} m | '
+            f'{self.quality_summary(position)} {validity} | '
+            f'hAcc={position["eph"]:.3f} m vAcc={position["epv"]:.3f} m | '
+            f'{self.SOURCE_LABEL} age={age:.1f}s{stale} '
             f'status age={status_age:.1f}s | samples={self.received_samples} '
             f'CSV rows={self.recorder.rows}')
 
@@ -138,11 +141,30 @@ class GpsLogger(Node):
         self._report_event(self.recorder.close('logger shutdown'))
 
 
-def main(args=None):
+class GpsLogger(PositionLogger):
+    NODE_NAME = 'here4_logger'
+    SOURCE_LABEL = 'GPS'
+    TOPIC_PARAMETER = 'gps_topic'
+    BASE_TOPIC = 'vehicle_gps_position'
+    MESSAGE_TYPE = SensorGps
+    DEFAULT_OUTPUT_DIRECTORY = '~/gps_logs'
+    FILENAME_PREFIX = 'position'
+    CSV_FIELDS = CSV_FIELDS
+    sample_values = staticmethod(gps_values)
+
+    @staticmethod
+    def quality_summary(position):
+        return (
+            f'fix={position["fix_name"]} ({position["fix_type"]}) '
+            f'sats={position["satellites_used"]} '
+            f'speed={position["vel_m_s"]:.3f} m/s')
+
+
+def run_logger(node_class, args=None):
     rclpy.init(args=args)
     node = None
     try:
-        node = GpsLogger()
+        node = node_class()
         rclpy.spin(node)
     except (KeyboardInterrupt, ExternalShutdownException):
         pass
@@ -156,6 +178,10 @@ def main(args=None):
         finally:
             if rclpy.ok():
                 rclpy.shutdown()
+
+
+def main(args=None):
+    run_logger(GpsLogger, args)
 
 
 if __name__ == '__main__':

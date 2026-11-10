@@ -28,11 +28,24 @@ GPS_FIELDS = (
     'authentication_state', 'system_error',
 )
 
-CSV_FIELDS = (
+SESSION_FIELDS = (
     'received_utc', 'session_elapsed_s', 'status_timestamp_us',
     'armed_time_us', 'status_age_s', 'status_fresh', 'arming_state',
-    'nav_state', 'failsafe', 'fix_name', 'position_3d_valid',
-) + GPS_FIELDS
+    'nav_state', 'failsafe',
+)
+
+# Preserve the existing GPS CSV layout.
+CSV_FIELDS = SESSION_FIELDS + ('fix_name', 'position_3d_valid') + GPS_FIELDS
+
+EKF_DIAGNOSTIC_FIELDS = (
+    'timestamp', 'timestamp_sample', 'lat_lon_valid', 'alt_valid', 'eph', 'epv',
+    'dead_reckoning', 'delta_alt', 'delta_terrain', 'lat_lon_reset_counter',
+    'alt_reset_counter', 'terrain_reset_counter', 'terrain_alt', 'terrain_alt_valid',
+)
+EKF_FIELDS = (
+    'latitude_deg', 'longitude_deg', 'altitude_msl_m', 'altitude_ellipsoid_m',
+) + EKF_DIAGNOSTIC_FIELDS
+EKF_CSV_FIELDS = SESSION_FIELDS + ('position_3d_valid',) + EKF_FIELDS
 
 
 def utc_now():
@@ -53,6 +66,22 @@ def gps_values(message):
     return values
 
 
+def ekf_values(message):
+    """Read the selected global navigation estimate and retain its validity flags."""
+    values = {name: getattr(message, name) for name in EKF_DIAGNOSTIC_FIELDS}
+    values.update(
+        latitude_deg=message.lat, longitude_deg=message.lon,
+        altitude_msl_m=message.alt, altitude_ellipsoid_m=message.alt_ellipsoid,
+    )
+    values['position_3d_valid'] = (
+        bool(message.lat_lon_valid and message.alt_valid)
+        and math.isfinite(message.lat) and -90.0 <= message.lat <= 90.0
+        and math.isfinite(message.lon) and -180.0 <= message.lon <= 180.0
+        and math.isfinite(message.alt)
+    )
+    return values
+
+
 @dataclass(frozen=True)
 class SessionEvent:
     kind: str
@@ -62,15 +91,18 @@ class SessionEvent:
 
 
 class PositionRecorder:
-    """Write GPS arrivals while the latest received VehicleStatus says armed."""
+    """Write position arrivals while the latest received VehicleStatus says armed."""
 
     def __init__(self, output_directory, status_timeout_s=3.0,
-                 monotonic_clock=time.monotonic, wall_clock=utc_now):
+                 monotonic_clock=time.monotonic, wall_clock=utc_now, *,
+                 fieldnames=CSV_FIELDS, filename_prefix='position'):
         self.output_directory = Path(output_directory).expanduser().resolve()
         self.output_directory.mkdir(parents=True, exist_ok=True)
         self.status_timeout_s = status_timeout_s
         self.monotonic = monotonic_clock
         self.wall_clock = wall_clock
+        self.fieldnames = fieldnames
+        self.filename_prefix = filename_prefix
         self.armed = None
         self.status = None
         self.status_received_at = None
@@ -104,11 +136,12 @@ class PositionRecorder:
 
     def _start(self):
         stamp = self.wall_clock().strftime('%Y%m%dT%H%M%S_%fZ')
-        path = self.output_directory / f'position_{stamp}_{uuid4().hex[:8]}.csv'
+        path = self.output_directory / (
+            f'{self.filename_prefix}_{stamp}_{uuid4().hex[:8]}.csv')
         # Exclusive creation prevents an old flight log from being overwritten.
         stream = path.open('x', newline='', encoding='utf-8')
         try:
-            writer = csv.DictWriter(stream, fieldnames=CSV_FIELDS)
+            writer = csv.DictWriter(stream, fieldnames=self.fieldnames)
             writer.writeheader()
             stream.flush()
             os.fsync(stream.fileno())
@@ -130,6 +163,10 @@ class PositionRecorder:
         return max(0.0, self.monotonic() - self.status_received_at)
 
     def write_gps(self, values):
+        """Keep the original GPS recorder API available."""
+        return self.write_position(values)
+
+    def write_position(self, values):
         if self._file is None:
             return False
         age = self.status_age()

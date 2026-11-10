@@ -17,8 +17,11 @@ setup(
     zip_safe=True,
     maintainer='GPS workspace maintainer',
     maintainer_email='maintainer@example.com',
-    description='PX4 GPS terminal monitor and CSV logger for each armed session',
+    description='PX4 GPS and EKF position monitors with CSV logs for each armed session',
     license='Apache-2.0',
     tests_require=['pytest'],
-    entry_points={'console_scripts': ['gps_logger = here4_logger.node:main']},
+    entry_points={'console_scripts': [
+        'gps_logger = here4_logger.node:main',
+        'ekf_logger = here4_logger.ekf_node:main',
+    ]},
 )

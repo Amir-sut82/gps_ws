@@ -2,7 +2,7 @@
 <package format="3">
   <name>here4_logger</name>
   <version>0.1.0</version>
-  <description>Receive PX4 XRCE-DDS GPS data and save one CSV per armed session.</description>
+  <description>Receive PX4 XRCE-DDS GPS and EKF positions with separate logs per armed session.</description>
   <maintainer email="maintainer@example.com">GPS workspace maintainer</maintainer>
   <license>Apache-2.0</license>
   <buildtool_depend>ament_python</buildtool_depend>

@@ -1,0 +1,9 @@
+ekf_position_logger:
+  ros__parameters:
+    output_directory: "~/ekf_logs"
+    px4_namespace: ""
+    ekf_topic: "auto"
+    status_topic: "auto"
+    print_rate_hz: 1.0
+    stale_timeout_s: 3.0
+    flush_interval_s: 1.0
