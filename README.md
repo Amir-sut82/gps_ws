@@ -241,7 +241,7 @@ For a PX4 client configured to use **UDP/network transport**, the alternative
 agent command is:
 
 ```bash
-MicroXRCEAgent udp4 -p 8888
+MicroXRCEAgent udp4 -p 8888 #Only for testing XRCE Agent
 ```
 
 Configure the PX4 client with the Orange Pi's network address and UDP port
