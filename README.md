@@ -88,9 +88,8 @@ alone does not prove that the pins have the correct UART mux enabled.
 
 ROS 2 Humble must already be installed; for a new OS use the official
 [Humble Ubuntu installation instructions](https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debs.html).
-Build the agent separately from `gps_ws`. Use **v2.4.2**, the agent version
-listed for Humble in the [PX4 1.17 bridge guide](https://docs.px4.io/v1.17/en/middleware/uxrce_dds#build-run-within-ros-2-workspace),
-rather than cloning an unpinned development branch.
+Build the agent separately from `gps_ws`. The commands below use the clone and
+Make workflow and assume a fresh source directory.
 
 In a fresh terminal, install the build tools and build/install the agent:
 
@@ -99,31 +98,33 @@ sudo apt update
 sudo apt install -y git cmake build-essential libssl-dev
 
 cd ~
-git clone --depth 1 --branch v2.4.2 \
-  https://github.com/eProsima/Micro-XRCE-DDS-Agent.git \
-  Micro-XRCE-DDS-Agent-v2.4.2
-
-cd ~/Micro-XRCE-DDS-Agent-v2.4.2
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build --parallel 2
-sudo cmake --install build
-sudo ldconfig
+git clone https://github.com/eProsima/Micro-XRCE-DDS-Agent.git
+cd Micro-XRCE-DDS-Agent
+# Consider checking out a specific tag/release if latest 'main' causes issues.
+mkdir build && cd build
+cmake ..
+make
+sudo make install
+sudo ldconfig /usr/local/lib/
 ```
 
 The first build downloads dependencies and needs an Internet connection.
-If that source directory already exists, check its tag before reusing it;
+If that source directory already exists, check its revision before reusing it;
 the clone command intentionally does not overwrite an existing checkout.
 Check the source version, installation, and shared libraries:
 
 ```bash
-git -C ~/Micro-XRCE-DDS-Agent-v2.4.2 describe --tags --exact-match
+git -C ~/Micro-XRCE-DDS-Agent rev-parse --short HEAD
 command -v MicroXRCEAgent
 ldd /usr/local/bin/MicroXRCEAgent
 ```
 
-The tag should be `v2.4.2`; `ldd` should show no `not found` libraries.
+Record the printed commit revision; `ldd` should show no `not found` libraries.
 The commands below use the source-installed **`MicroXRCEAgent`** executable.
-[Agent source/build configuration](https://github.com/eProsima/Micro-XRCE-DDS-Agent/tree/v2.4.2).
+If `main` is incompatible with PX4 1.17 / Humble, the
+[PX4 1.17 bridge guide](https://docs.px4.io/v1.17/en/middleware/uxrce_dds#build-run-within-ros-2-workspace)
+lists **v2.4.2** as the compatible Humble release.
+[Agent source/build configuration](https://github.com/eProsima/Micro-XRCE-DDS-Agent).
 
 ## PX4 parameters in QGroundControl
 
@@ -235,6 +236,17 @@ Expected agent output includes `session established`, followed by topic and
 data-writer creation. One agent serves both loggers; keep it running in this
 terminal. The agent is started with `sudo` for serial-port access, while the
 ROS 2 logger nodes run as your normal user.
+
+For a PX4 client configured to use **UDP/network transport**, the alternative
+agent command is:
+
+```bash
+MicroXRCEAgent udp4 -p 8888
+```
+
+Configure the PX4 client with the Orange Pi's network address and UDP port
+**8888** for that option. Use the serial command for the TELEM2/UART6 wiring
+described above.
 
 In each logger terminal, use the same domain as the PX4 parameter above:
 
@@ -469,7 +481,7 @@ systemctl status serial-getty@ttyS6.service
 - **Agent runs but no PX4 session:** check crossed TX/RX, common ground,
   matching 921600 baud, the TELEM2 assignment, and the Pixhawk reboot.
 - **Session established but ROS receives nothing:** check the matching PX4
-  1.17 messages, domain 0, namespace, sensor-data QoS, and agent v2.4.2.
+  1.17 messages, domain 0, namespace, sensor-data QoS, and a compatible agent release.
   In a sourced logger terminal, run `ros2 daemon stop` and then
   `ros2 topic list -t` after correcting the DDS environment.
 
