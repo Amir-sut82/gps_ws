@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="1296pt" height="748.8pt" viewBox="0 0 1296 748.8" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-11-11T16:39:48.888525</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.5.1, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 748.8 
+L 1296 748.8 
+L 1296 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 48.96 511.2 
+L 275.04 511.2 
+Q 288 511.2 288 498.24 
+L 288 185.76 
+Q 288 172.8 275.04 172.8 
+L 48.96 172.8 
+Q 36 172.8 36 185.76 
+L 36 498.24 
+Q 36 511.2 48.96 511.2 
+z
+" clip-path="url(#p182e208d11)" style="fill: #f4f7fb; stroke: #d2dce8; stroke-width: 1.4; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 473.76 511.2 
+L 822.24 511.2 
+Q 835.2 511.2 835.2 498.24 
+L 835.2 185.76 
+Q 835.2 172.8 822.24 172.8 
+L 473.76 172.8 
+Q 460.8 172.8 460.8 185.76 
+L 460.8 498.24 
+Q 460.8 511.2 473.76 511.2 
+z
+" clip-path="url(#p182e208d11)" style="fill: #f4f7fb; stroke: #d2dce8; stroke-width: 1.4; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 1013.76 511.2 
+L 1247.04 511.2 
+Q 1260 511.2 1260 498.24 
+L 1260 185.76 
+Q 1260 172.8 1247.04 172.8 
+L 1013.76 172.8 
+Q 1000.8 172.8 1000.8 185.76 
+L 1000.8 498.24 
+Q 1000.8 511.2 1013.76 511.2 
+z
+" clip-path="url(#p182e208d11)" style="fill: #f4f7fb; stroke: #d2dce8; stroke-width: 1.4; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 296.952845 316.8 
+Q 374.398332 316.8 455.197922 316.8 
+" clip-path="url(#p182e208d11)" style="fill: none; stroke: #bd3d32; stroke-width: 3; stroke-linecap: round"/>
+    <path d="M 304.952845 320.8 
+L 296.952845 316.8 
+L 304.952845 312.8 
+L 304.952845 320.8 
+z
+" clip-path="url(#p182e208d11)" style="fill: #bd3d32; stroke: #bd3d32; stroke-width: 3; stroke-linecap: round"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 296.952845 360 
+Q 374.398332 360 451.84382 360 
+" clip-path="url(#p182e208d11)" style="fill: none; stroke: #2563eb; stroke-width: 3; stroke-linecap: round"/>
+    <path d="M 304.952845 364 
+L 296.952845 360 
+L 304.952845 356 
+L 304.952845 364 
+z
+" clip-path="url(#p182e208d11)" style="fill: #2563eb; stroke: #2563eb; stroke-width: 3; stroke-linecap: round"/>
+    <path d="M 443.84382 356 
+L 451.84382 360 
+L 443.84382 364 
+L 443.84382 356 
+z
+" clip-path="url(#p182e208d11)" style="fill: #2563eb; stroke: #2563eb; stroke-width: 3; stroke-linecap: round"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 296.952845 403.2 
+Q 374.398332 403.2 451.84382 403.2 
+" clip-path="url(#p182e208d11)" style="fill: none; stroke: #087f5b; stroke-width: 3; stroke-linecap: round"/>
+    <path d="M 304.952845 407.2 
+L 296.952845 403.2 
+L 304.952845 399.2 
+L 304.952845 407.2 
+z
+" clip-path="url(#p182e208d11)" style="fill: #087f5b; stroke: #087f5b; stroke-width: 3; stroke-linecap: round"/>
+    <path d="M 443.84382 399.2 
+L 451.84382 403.2 
+L 443.84382 407.2 
+L 443.84382 399.2 
+z
+" clip-path="url(#p182e208d11)" style="fill: #087f5b; stroke: #087f5b; stroke-width: 3; stroke-linecap: round"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 293.598743 446.4 
+Q 374.398332 446.4 455.197922 446.4 
+" clip-path="url(#p182e208d11)" style="fill: none; stroke: #64748b; stroke-width: 3; stroke-linecap: round"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 840.796436 316.8 
+Q 917.998262 316.8 991.845987 316.8 
+" clip-path="url(#p182e208d11)" style="fill: none; stroke: #2563eb; stroke-width: 3; stroke-linecap: round"/>
+    <path d="M 983.845987 312.8 
+L 991.845987 316.8 
+L 983.845987 320.8 
+L 983.845987 312.8 
+z
+" clip-path="url(#p182e208d11)" style="fill: #2563eb; stroke: #2563eb; stroke-width: 3; stroke-linecap: round"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 844.150538 381.6 
+Q 917.998262 381.6 995.200089 381.6 
+" clip-path="url(#p182e208d11)" style="fill: none; stroke: #087f5b; stroke-width: 3; stroke-linecap: round"/>
+    <path d="M 852.150538 385.6 
+L 844.150538 381.6 
+L 852.150538 377.6 
+L 852.150538 385.6 
+z
+" clip-path="url(#p182e208d11)" style="fill: #087f5b; stroke: #087f5b; stroke-width: 3; stroke-linecap: round"/>
+   </g>
+   <g id="patch_11">
+    <path d="M 840.796436 446.4 
+Q 917.998262 446.4 995.200089 446.4 
+" clip-path="url(#p182e208d11)" style="fill: none; stroke: #64748b; stroke-width: 3; stroke-linecap: round"/>
+   </g>
+   <g id="patch_12">
+    <path d="M 48.96 603.36 
+L 1247.04 603.36 
+Q 1260 603.36 1260 590.4 
+L 1260 558 
+Q 1260 545.04 1247.04 545.04 
+L 48.96 545.04 
+Q 36 545.04 36 558 
+L 36 590.4 
+Q 36 603.36 48.96 603.36 
+z
+" clip-path="url(#p182e208d11)" style="fill: #fff1ee; stroke: #f1b7ad; stroke-width: 1.4; stroke-linejoin: miter"/>
+   </g>
+   <g id="line2d_1">
+    <path d="M 633.6 478.8 
+L 633.6 257.76 
+" clip-path="url(#p182e208d11)" style="fill: none; stroke: #d2dce8; stroke-width: 1.5; stroke-linecap: square"/>
+   </g>
+   <g id="text_1">
+    <text style="fill: #17263c; font: 700 29px 'DejaVu Sans'; text-anchor: start" x="36" y="61.888906" transform="rotate(-0, 36, 61.888906)">Here4 → Pixhawk → Orange Pi</text>
+   </g>
+   <g id="text_2">
+    <text style="fill: #52637b; font: 17px 'DejaVu Sans'; text-anchor: start" x="36" y="96.850937" transform="rotate(-0, 36, 96.850937)">CAN1 carries GNSS data. TELEM2 carries XRCE-DDS over a three-wire UART link.</text>
+   </g>
+   <g id="text_3">
+    <text style="fill: #17263c; font: 700 23px 'DejaVu Sans'; text-anchor: middle" x="162" y="213.706563" transform="rotate(-0, 162, 213.706563)">Here4</text>
+   </g>
+   <g id="text_4">
+    <text style="fill: #52637b; font: 14px 'DejaVu Sans'; text-anchor: middle" x="162" y="241.463125" transform="rotate(-0, 162, 241.463125)">GNSS / DroneCAN sensor</text>
+   </g>
+   <g id="text_5">
+    <text style="fill: #17263c; font: 700 23px 'DejaVu Sans'; text-anchor: middle" x="648" y="213.706563" transform="rotate(-0, 648, 213.706563)">Pixhawk 6C Mini</text>
+   </g>
+   <g id="text_6">
+    <text style="fill: #52637b; font: 14px 'DejaVu Sans'; text-anchor: middle" x="648" y="241.463125" transform="rotate(-0, 648, 241.463125)">PX4 1.17 · onboard IMUs + EKF</text>
+   </g>
+   <g id="text_7">
+    <text style="fill: #17263c; font: 700 21px 'DejaVu Sans'; text-anchor: middle" x="1130.4" y="213.072656" transform="rotate(-0, 1130.4, 213.072656)">Orange Pi 5 Plus</text>
+   </g>
+   <g id="text_8">
+    <text style="fill: #52637b; font: 15px 'DejaVu Sans'; text-anchor: middle" x="1130.4" y="241.739063" transform="rotate(-0, 1130.4, 241.739063)">ROS 2 Humble</text>
+   </g>
+   <g id="text_9">
+    <text style="fill: #17263c; font: 700 15px 'DejaVu Sans'; text-anchor: start" x="57.6" y="279.179063" transform="rotate(-0, 57.6, 279.179063)">Supplied CAN cable</text>
+   </g>
+   <g id="text_10">
+    <text style="fill: #17263c; font: 700 17px 'DejaVu Sans'; text-anchor: start" x="478.8" y="279.730938" transform="rotate(-0, 478.8, 279.730938)">CAN1</text>
+   </g>
+   <g id="text_11">
+    <text style="fill: #17263c; font: 700 17px 'DejaVu Sans'; text-anchor: start" x="655.2" y="279.730938" transform="rotate(-0, 655.2, 279.730938)">TELEM2</text>
+   </g>
+   <g id="text_12">
+    <text style="fill: #17263c; font: 700 15px 'DejaVu Sans'; text-anchor: start" x="1015.2" y="279.120469" transform="rotate(-0, 1015.2, 279.120469)">Physical header pins</text>
+   </g>
+   <g id="text_13">
+    <text style="fill: #bd3d32; font: 700 17px 'DejaVu Sans'; text-anchor: start" x="57.6" y="321.490938" transform="rotate(-0, 57.6, 321.490938)">+5 V</text>
+   </g>
+   <g id="text_14">
+    <text style="fill: #bd3d32; font: 700 16px 'DejaVu Sans'; text-anchor: start" x="478.8" y="321.215" transform="rotate(-0, 478.8, 321.215)">1   +5 V</text>
+   </g>
+   <g id="text_15">
+    <text style="fill: #2563eb; font: 700 17px 'DejaVu Sans'; text-anchor: start" x="57.6" y="364.304453" transform="rotate(-0, 57.6, 364.304453)">CAN_H</text>
+   </g>
+   <g id="text_16">
+    <text style="fill: #2563eb; font: 700 16px 'DejaVu Sans'; text-anchor: start" x="478.8" y="364.05125" transform="rotate(-0, 478.8, 364.05125)">2   CAN_H</text>
+   </g>
+   <g id="text_17">
+    <text style="fill: #087f5b; font: 700 17px 'DejaVu Sans'; text-anchor: start" x="57.6" y="407.504453" transform="rotate(-0, 57.6, 407.504453)">CAN_L</text>
+   </g>
+   <g id="text_18">
+    <text style="fill: #087f5b; font: 700 16px 'DejaVu Sans'; text-anchor: start" x="478.8" y="407.25125" transform="rotate(-0, 478.8, 407.25125)">3   CAN_L</text>
+   </g>
+   <g id="text_19">
+    <text style="fill: #64748b; font: 700 17px 'DejaVu Sans'; text-anchor: start" x="57.6" y="451.090938" transform="rotate(-0, 57.6, 451.090938)">GND</text>
+   </g>
+   <g id="text_20">
+    <text style="fill: #64748b; font: 700 16px 'DejaVu Sans'; text-anchor: start" x="478.8" y="450.815" transform="rotate(-0, 478.8, 450.815)">4   GND</text>
+   </g>
+   <g id="text_21">
+    <text style="fill: #2563eb; font: 700 17px 'DejaVu Sans'; text-anchor: start" x="655.2" y="321.490938" transform="rotate(-0, 655.2, 321.490938)">2   TX</text>
+   </g>
+   <g id="text_22">
+    <text style="fill: #2563eb; font: 700 17px 'DejaVu Sans'; text-anchor: start" x="1015.2" y="321.490938" transform="rotate(-0, 1015.2, 321.490938)">10   RX</text>
+   </g>
+   <g id="text_23">
+    <text style="fill: #2563eb; font: 12px 'DejaVu Sans'; text-anchor: middle" x="918" y="297.79125" transform="rotate(-0, 918, 297.79125)">TX → RX</text>
+   </g>
+   <g id="text_24">
+    <text style="fill: #087f5b; font: 700 17px 'DejaVu Sans'; text-anchor: start" x="655.2" y="386.290938" transform="rotate(-0, 655.2, 386.290938)">3   RX</text>
+   </g>
+   <g id="text_25">
+    <text style="fill: #087f5b; font: 700 17px 'DejaVu Sans'; text-anchor: start" x="1015.2" y="386.290938" transform="rotate(-0, 1015.2, 386.290938)">8     TX</text>
+   </g>
+   <g id="text_26">
+    <text style="fill: #087f5b; font: 12px 'DejaVu Sans'; text-anchor: middle" x="918" y="362.59125" transform="rotate(-0, 918, 362.59125)">RX ← TX</text>
+   </g>
+   <g id="text_27">
+    <text style="fill: #64748b; font: 700 17px 'DejaVu Sans'; text-anchor: start" x="655.2" y="451.090938" transform="rotate(-0, 655.2, 451.090938)">6   GND</text>
+   </g>
+   <g id="text_28">
+    <text style="fill: #64748b; font: 700 17px 'DejaVu Sans'; text-anchor: start" x="1015.2" y="451.090938" transform="rotate(-0, 1015.2, 451.090938)">6     GND</text>
+   </g>
+   <g id="text_29">
+    <text style="fill: #64748b; font: 12px 'DejaVu Sans'; text-anchor: middle" x="918" y="427.39125" transform="rotate(-0, 918, 427.39125)">common GND</text>
+   </g>
+   <g id="text_30">
+    <text style="fill: #52637b; font: 12px 'DejaVu Sans'; text-anchor: middle" x="1130.4" y="489.31125" transform="rotate(-0, 1130.4, 489.31125)">/dev/ttyS6 · 921600 · 8N1</text>
+   </g>
+   <g id="text_31">
+    <text style="fill: #bd3d32; font: 700 17px 'DejaVu Sans'; text-anchor: start" x="57.6" y="579.184531" transform="rotate(-0, 57.6, 579.184531)">UART: 3.3 V logic. Leave TELEM2 pin 1 (+5 V), pin 4 (CTS), and pin 5 (RTS) disconnected.</text>
+   </g>
+   <g id="text_32">
+    <text style="fill: #17263c; font: 700 17px 'DejaVu Sans'; text-anchor: start" x="36" y="648.304531" transform="rotate(-0, 36, 648.304531)">Power the Orange Pi separately. Here4 is powered through the Pixhawk CAN1 cable.</text>
+   </g>
+   <g id="text_33">
+    <text style="fill: #52637b; font: 14px 'DejaVu Sans'; text-anchor: start" x="36" y="684.263125" transform="rotate(-0, 36, 684.263125)">Logical connections, not connector-face ordering. Locate pin 1 using the manufacturer diagrams before wiring.</text>
+   </g>
+   <g id="text_34">
+    <text style="fill: #52637b; font: 12px 'DejaVu Sans'; text-anchor: start" x="36" y="717.55125" transform="rotate(-0, 36, 717.55125)">Original schematic · Sources: Holybro Pixhawk 6C Mini ports, Orange Pi 5 Plus manual, CubePilot Here4 manual.</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p182e208d11">
+   <rect x="0" y="0" width="1296" height="748.8"/>
+  </clipPath>
+ </defs>
+</svg>
