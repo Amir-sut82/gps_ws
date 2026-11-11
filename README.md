@@ -176,11 +176,92 @@ Save the parameters and **reboot the Pixhawk** before starting the agent.
 [PX4 1.17 serial/bridge settings](https://docs.px4.io/v1.17/en/middleware/uxrce_dds#starting-the-client),
 [PX4 1.17 parameter reference](https://docs.px4.io/v1.17/en/advanced_config/parameter_reference#UXRCE_DDS_CFG).
 
+### EKF / GNSS aiding
+
 For the normal GPS-aided EKF, keep GNSS position/altitude/velocity aiding
 enabled (`EKF2_GPS_CTRL=7` is the standard bitmask). Preserve a deliberately
 configured custom aiding setup. Complete the normal airframe and sensor
 calibration, and wait for a usable GNSS fix; enabling serial communications
 alone does not make an EKF estimate valid.
+
+### Bench-only arming overrides: DO NOT FLY
+
+> [!WARNING]
+> **These overrides are ONLY for arming a standalone Pixhawk to collect data
+> on the bench. This configuration is NOT SUITABLE FOR FLIGHT. NEVER fly with
+> this bench override configuration.** It removes safety protections and can
+> leave the system armed indefinitely. Remove propellers and disconnect motor
+> and actuator power before testing; do not rely on software settings to prevent motion.
+
+Before editing, export a backup of the Pixhawk's current parameters from QGC.
+In **Vehicle Setup → Parameters**, search for the exact names below. Apply
+only the overrides needed for this standalone bench setup. These values are
+for **PX4 1.17**; use the labels and help from the installed firmware if your
+build differs. The ROS nodes never change these parameters or command arming.
+
+| Parameter | Bench value | Effect / limitation |
+| --- | --- | --- |
+| `COM_RC_IN_MODE` | `4` | Ignores all manual-control sources. `1` means MAVLink-only input and is not equivalent. |
+| `CBRK_IO_SAFETY` | `22027` | Bypasses the IO safety switch. |
+| `CBRK_USB_CHK` | `197848` | Bypasses the USB-connected arming check. |
+| `CBRK_SUPPLY_CHK` | `894281` | Bypasses commander power-valid checks; does not provide power or fix a faulty supply. |
+| `COM_ARM_WO_GPS` | `1` | Makes failures of the configured GPS preflight checks warnings. Does not create a valid position estimate. |
+| `COM_DISARM_PRFLT` | `-1` | Disables automatic disarming when no takeoff follows arming. Use the documented negative value. |
+| `COM_DISARM_LAND` | `-1` | Disables automatic disarming triggered by landing detection. |
+
+Circuit breakers require the **exact numeric keys**, not `1`. Verify every
+saved value after reboot.
+[PX4 1.17 circuit breakers](https://docs.px4.io/v1.17/en/advanced_config/parameter_reference#CBRK_IO_SAFETY),
+[commander parameter definitions](https://github.com/PX4/PX4-Autopilot/blob/release/1.17/src/modules/commander/commander_params.c).
+
+The battery settings shown in the reference screenshots need these corrections:
+
+| Parameter | Screenshot value | Correct PX4 1.17 meaning |
+| --- | --- | --- |
+| `COM_ARM_BAT_MIN` | `-1` | Uses `BAT_CRIT_THR` as the minimum battery fraction for arming. **Does not disable battery checks.** |
+| `BAT1_SOURCE` | `1` / **External** | Expects real MAVLink battery-status messages. Use only with that telemetry source; do not select it simply to hide a missing battery. |
+
+Keep the battery source appropriate for the actual hardware. Inspect any remaining
+QGC arming failure instead of assuming these settings bypass every check.
+[Battery arming threshold](https://docs.px4.io/v1.17/en/advanced_config/parameter_reference#COM_ARM_BAT_MIN),
+[battery source](https://docs.px4.io/v1.17/en/advanced_config/parameter_reference#BAT1_SOURCE).
+
+After saving changes, disarm and reboot the Pixhawk. For a full power cycle,
+disconnect **all** Pixhawk power sources, including USB, then reconnect and
+re-read the values in QGC. A USB unplug alone does not reboot a board still
+powered through another connector.
+
+Allowing arming without GPS does not satisfy the position requirements of every
+navigation mode. Check GPS fix quality and the EKF validity fields in the
+terminal and CSV; an armed state alone says nothing about position accuracy.
+
+**After bench collection: manually disarm. Before connecting motor/actuator power
+or flying, restore the saved, flight-appropriate parameter configuration, reboot,
+and complete the normal calibration, safety-switch, power, manual-control,
+navigation and failsafe checks. Do not treat this bench configuration as a
+flight setup or blindly substitute generic defaults.**
+
+### Optional PX4 SD-card logs
+
+For an additional `.ulg` recording, insert a working **FAT32-formatted microSD
+card** in the Pixhawk. These settings control the Pixhawk SD log, independently
+of the Orange Pi CSV files:
+
+| Parameter | Value | Purpose |
+| --- | --- | --- |
+| `SDLOG_MODE` | `0` | Records from arm to disarm. |
+| `SDLOG_PROFILE` | `1` | Default topic set. |
+
+`SDLOG_PROFILE` is a bitmask: **bit 6 / value `64` is low-rate raw IMU, barometer
+and magnetometer sensor comparison, not a high-rate GNSS profile**. To add that
+set while keeping the default set, use `65` (`1 + 64`). Additional profiles
+increase log bandwidth and file size; select only the sets needed in QGC.
+`SDLOG_MODE=2` instead records from boot to shutdown. Save and reboot after
+changing these SD settings.
+[PX4 SD logging mode](https://docs.px4.io/v1.17/en/advanced_config/parameter_reference#SDLOG_MODE),
+[logging profiles](https://docs.px4.io/v1.17/en/advanced_config/parameter_reference#SDLOG_PROFILE).
+
+### Check the PX4 side
 
 To check the PX4 side, use **QGC → Analyze Tools → MAVLink Console**:
 
@@ -444,89 +525,16 @@ where your agent's topics are already visible. Keep your working agent/PX4
 serial configuration. This workspace needs neither MAVROS nor another serial
 connection.
 
-## Arming from QGC and optional PX4 SD logs
+## Arming from QGC and retrieving logs
 
 Start the agent and the desired logger nodes before using QGC's normal Arm /
 Disarm control. Each node starts its CSV only after PX4 reports **armed** and
 closes it after PX4 reports **disarmed**. A rejected arm request creates no new
 session. Both nodes continue to display incoming data while disarmed.
 
-### Bench-only arming overrides: DO NOT FLY
-
-> [!WARNING]
-> **These overrides are ONLY for arming a standalone Pixhawk to collect data
-> on the bench. This configuration is NOT SUITABLE FOR FLIGHT. NEVER fly with
-> this bench override configuration.** It removes safety protections and can
-> leave the system armed indefinitely. Remove propellers and disconnect motor
-> and actuator power before testing; do not rely on software settings to prevent motion.
-
-Before editing, export a backup of the Pixhawk's current parameters from QGC.
-In **Vehicle Setup → Parameters**, search for the exact names below. Apply
-only the overrides needed for this standalone bench setup. These values are
-for **PX4 1.17**; use the labels and help from the installed firmware if your
-build differs. The ROS nodes never change these parameters or command arming.
-
-| Parameter | Bench value | Effect / limitation |
-| --- | --- | --- |
-| `COM_RC_IN_MODE` | `4` | Ignores all manual-control sources. `1` means MAVLink-only input and is not equivalent. |
-| `CBRK_IO_SAFETY` | `22027` | Bypasses the IO safety switch. |
-| `CBRK_USB_CHK` | `197848` | Bypasses the USB-connected arming check. |
-| `CBRK_SUPPLY_CHK` | `894281` | Bypasses commander power-valid checks; does not provide power or fix a faulty supply. |
-| `COM_ARM_WO_GPS` | `1` | Makes failures of the configured GPS preflight checks warnings. Does not create a valid position estimate. |
-| `COM_DISARM_PRFLT` | `-1` | Disables automatic disarming when no takeoff follows arming. Use the documented negative value. |
-| `COM_DISARM_LAND` | `-1` | Disables automatic disarming triggered by landing detection. |
-
-Circuit breakers require the **exact numeric keys**, not `1`. Verify every
-saved value after reboot.
-[PX4 1.17 circuit breakers](https://docs.px4.io/v1.17/en/advanced_config/parameter_reference#CBRK_IO_SAFETY),
-[commander parameter definitions](https://github.com/PX4/PX4-Autopilot/blob/release/1.17/src/modules/commander/commander_params.c).
-
-The battery settings shown in the reference screenshots need these corrections:
-
-| Parameter | Screenshot value | Correct PX4 1.17 meaning |
-| --- | --- | --- |
-| `COM_ARM_BAT_MIN` | `-1` | Uses `BAT_CRIT_THR` as the minimum battery fraction for arming. **Does not disable battery checks.** |
-| `BAT1_SOURCE` | `1` / **External** | Expects real MAVLink battery-status messages. Use only with that telemetry source; do not select it simply to hide a missing battery. |
-
-Keep the battery source appropriate for the actual hardware. Inspect any remaining
-QGC arming failure instead of assuming these settings bypass every check.
-[Battery arming threshold](https://docs.px4.io/v1.17/en/advanced_config/parameter_reference#COM_ARM_BAT_MIN),
-[battery source](https://docs.px4.io/v1.17/en/advanced_config/parameter_reference#BAT1_SOURCE).
-
-After saving changes, disarm and reboot the Pixhawk. For a full power cycle,
-disconnect **all** Pixhawk power sources, including USB, then reconnect and
-re-read the values in QGC. A USB unplug alone does not reboot a board still
-powered through another connector.
-
-Allowing arming without GPS does not satisfy the position requirements of every
-navigation mode. Check GPS fix quality and the EKF validity fields in the
-terminal and CSV; an armed state alone says nothing about position accuracy.
-
-**After bench collection: manually disarm. Before connecting motor/actuator power
-or flying, restore the saved, flight-appropriate parameter configuration, reboot,
-and complete the normal calibration, safety-switch, power, manual-control,
-navigation and failsafe checks. Do not treat this bench configuration as a
-flight setup or blindly substitute generic defaults.**
-
-### Optional PX4 SD-card logs
-
-For an additional `.ulg` recording, insert a working **FAT32-formatted microSD
-card** in the Pixhawk. These settings control the Pixhawk SD log, independently
-of the Orange Pi CSV files:
-
-| Parameter | Value | Purpose |
-| --- | --- | --- |
-| `SDLOG_MODE` | `0` | Records from arm to disarm. |
-| `SDLOG_PROFILE` | `1` | Default topic set. |
-
-`SDLOG_PROFILE` is a bitmask: **bit 6 / value `64` is low-rate raw IMU, barometer
-and magnetometer sensor comparison, not a high-rate GNSS profile**. To add that
-set while keeping the default set, use `65` (`1 + 64`). Additional profiles
-increase log bandwidth and file size; select only the sets needed in QGC.
-`SDLOG_MODE=2` instead records from boot to shutdown. Save and reboot after
-changing these SD settings.
-[PX4 SD logging mode](https://docs.px4.io/v1.17/en/advanced_config/parameter_reference#SDLOG_MODE),
-[logging profiles](https://docs.px4.io/v1.17/en/advanced_config/parameter_reference#SDLOG_PROFILE).
+For the standalone bench setup, review the
+[bench-only arming overrides](#bench-only-arming-overrides-do-not-fly)
+under **PX4 parameters in QGroundControl** before collecting data.
 
 For each bench recording:
 
